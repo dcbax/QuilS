@@ -4,7 +4,6 @@
 if [ "$(id -u)" != "0" ]; then
     echo -e "\033[31m此脚本需要以root用户权限运行。\033[0m"
     echo "请尝试使用 'sudo -i' 命令切换到root用户，然后再次运行此脚本。"
-    echo -e "\033[31m请复制此命令在根目录运行 chmod +x QuilS.sh && ./QuilS.sh\033[0m"
     exit 1
 fi
 

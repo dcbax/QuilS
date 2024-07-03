@@ -28,7 +28,6 @@ function check_and_set_alias() {
     fi
 }
 
-
 # 更新并升级Ubuntu软件包
 function update_upgrade() {
     echo -e "\033[33m=========================== 安装过程有弹窗 按回车或按提示输入 Y ============================\033[0m"
@@ -100,29 +99,23 @@ function install_gvm() {
 
 # 构建并配置服务
 function build_and_setup_service() {
-# Step 5:Determine the ExecStart line based on the architecture
-# Get the current user's home directory
-HOME=$(eval echo ~$HOME_DIR)
+    # 获取当前用户的主目录
+    HOME=$(eval echo ~$HOME_DIR)
+    NODE_PATH="$HOME/ceremonyclient/node"
+    EXEC_START="$NODE_PATH/release_autorun.sh"
 
-# Use the home directory in the path
-NODE_PATH="$HOME/ceremonyclient/node"
-EXEC_START="$NODE_PATH/release_autorun.sh"
+    echo "⏳ 节点加进系统服务Creating Ceremonyclient Service"
+    sleep 2  # Add a 2-second delay
 
-# Step 6:Create Ceremonyclient Service
-echo "⏳ 节点加进系统服务Creating Ceremonyclient Service"
-sleep 2  # Add a 2-second delay
+    # 检查文件是否存在并尝试删除
+    if [ -f "/lib/systemd/system/ceremonyclient.service" ]; then
+        rm /lib/systemd/system/ceremonyclient.service
+        echo "ceremonyclient.service file removed."
+    else
+        echo "ceremonyclient.service file does not exist. No action taken."
+    fi
 
-# Check if the file exists before attempting to remove it
-if [ -f "/lib/systemd/system/ceremonyclient.service" ]; then
-    # If the file exists, remove it
-    rm /lib/systemd/system/ceremonyclient.service
-    echo "ceremonyclient.service file removed."
-else
-    # If the file does not exist, inform the user
-    echo "ceremonyclient.service file does not exist. No action taken."
-fi
-
-sudo tee /lib/systemd/system/ceremonyclient.service > /dev/null <<EOF
+    sudo tee /lib/systemd/system/ceremonyclient.service > /dev/null <<EOF
 [Unit]
 Description=Ceremony Client Go App Service
 
@@ -137,14 +130,12 @@ ExecStart=$EXEC_START
 WantedBy=multi-user.target
 EOF
 
-sudo systemctl daemon-reload
-sudo systemctl enable ceremonyclient
+    sudo systemctl daemon-reload
+    sudo systemctl enable ceremonyclient
 
-# Step 7: Start the ceremonyclient service
-echo "✅节点已添加进系统服务 将以服务运行Starting Ceremonyclient Service"
-sleep 1  # Add a 1-second delay
-sudo service ceremonyclient start
-
+    echo "✅节点已添加进系统服务 将以服务运行Starting Ceremonyclient Service"
+    sleep 1  # Add a 1-second delay
+    sudo service ceremonyclient start
 
     echo -e "\033[32m====================================== 安装完成✅ ========================================\033[0m"
 }
@@ -213,6 +204,7 @@ function start_node() {
 # 提供给用户的菜单选项
 PS3='请选择一个操作: '
 options=("1. 更新并升级Ubuntu软件包" "2. 安装必要的组件" "3. 安装Go" "4. 安装节点并以screen运行" "5. 构建并配置服务" "6. 查看服务状态" "7. 查看服务日志" "8. 查看节点日志" "9. 查看运行中的screen" "10. 杀死screen进程" "11. 退出" "12. 启动节点")
+
 while true; do
     echo -e "\033[33m按 ctrl+C 退出菜单。\033[0m"
     select opt in "${options[@]}"

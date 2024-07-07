@@ -65,6 +65,7 @@ function install_gvm() {
     sudo tar -xvf go1.22.4.linux-amd64.tar.gz || { echo -e "\033[31mFailed to extract Go! Exiting...\033[0m"; exit 1; }
     sudo mv go /usr/local || { echo -e "\033[31mFailed to move Go! Exiting...\033[0m"; exit 1; }
     sudo rm go1.22.4.linux-amd64.tar.gz || { echo -e "\033[31mFailed to remove downloaded archive! Exiting...\033[0m"; exit 1; }
+    echo "export PATH=\$PATH:/usr/local/go/bin" >> ~/.profile
 
     echo -e "\033[32mSetting Go environment variables...\033[0m"
     sleep 5
@@ -154,9 +155,9 @@ function install_node() {
 
     echo "⏳下载挖矿节点 Ceremonyclient"
     sleep 1
-    git clone https://github.com/quilibriumnetwork/ceremonyclient
+    git clone https://github.com/QuilibriumNetwork/ceremonyclient
     echo "⏳更新挖矿节点"
-    cd ~/ceremonyclient/node && git remote set-url origin https://source.quilibrium.com/quilibrium/ceremonyclient.git && git pull && git checkout release
+    cd ~/ceremonyclient/node && git remote set-url origin https://github.com/QuilibriumNetwork/ceremonyclient.git && git pull && git checkout release
     echo -e "\033[32m====================================== 安装完成✅ =========================================\033[0m"
     echo -e "\033[33m============================== 准备跳转到screen窗口运行节点✅ =============================\033[0m"
     sleep 2
